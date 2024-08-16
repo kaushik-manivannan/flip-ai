@@ -8,6 +8,7 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/logo.svg";
+import logoDark from "@/public/logo-dark.svg";
 
 interface NavBarProps {}
 
@@ -30,16 +31,26 @@ const NavBar: FC<NavBarProps> = () => {
     <>
       <nav
         aria-label="Global"
-        className="flex items-center justify-between p-6 lg:px-8 bg-muted w-screen"
+        className="flex items-center justify-between p-6 lg:px-8 dark:bg-primary-foreground w-screen"
       >
-        <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 rounded-full">
-            <span className="sr-only">Flip AI</span>
-            <Image
-              alt="Flip AI Logo"
-              src={logo}
-            />
-          </Link>
+          <div className="flex lg:flex-1">
+            <Link href="/" className="-m-1.5 rounded-full">
+              <span className="sr-only">Flip AI</span>
+              <Image
+                className="hidden dark:block"
+                src={logoDark}
+                alt="dark-mode-image"
+                width={40}
+                height={40}
+              />
+              <Image
+                className="mb-4 block dark:hidden"
+                src={logo}
+                alt="light-mode-image"
+                width={40}
+                height={40}
+              />
+            </Link>
         </div>
         <div className="flex lg:hidden">
           <button
@@ -60,7 +71,7 @@ const NavBar: FC<NavBarProps> = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold leading-6 text-gray-900"
+                className="text-sm font-semibold leading-6 text-gray-900 dark:text-foreground"
               >
                 {item.name}
               </a>
@@ -73,7 +84,7 @@ const NavBar: FC<NavBarProps> = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold leading-6 text-gray-900"
+                className="text-sm font-semibold leading-6 text-gray-900 dark:text-foreground"
               >
                 {item.name}
               </Link>
@@ -82,10 +93,10 @@ const NavBar: FC<NavBarProps> = () => {
         </SignedIn>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <SignedOut>
-            <Link href="/sign-in" className="text-sm font-semibold leading-6 text-gray-900 mr-4" passHref>
+            <Link href="/sign-in" className="text-sm font-semibold leading-6 text-gray-900 mr-4 dark:text-foreground" passHref>
               Login
             </Link>
-            <Link href="/sign-up" className="text-sm font-semibold leading-6 text-gray-900" passHref>
+            <Link href="/sign-up" className="text-sm font-semibold leading-6 text-gray-900 dark:text-foreground" passHref>
               Sign Up
             </Link>
           </SignedOut>
@@ -102,13 +113,23 @@ const NavBar: FC<NavBarProps> = () => {
         className="lg:hidden"
       >
         <div className="fixed inset-0 z-50" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-background">
           <div className="flex items-center justify-between">
             <Link href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">Flip AI</span>
               <Image
-                alt="Flip AI Logo"
+                className="hidden dark:block"
+                src={logoDark}
+                alt="dark-mode-image"
+                width={40}
+                height={40}
+              />
+              <Image
+                className="mb-4 block dark:hidden"
                 src={logo}
+                alt="light-mode-image"
+                width={40}
+                height={40}
               />
             </Link>
             <button
@@ -117,18 +138,18 @@ const NavBar: FC<NavBarProps> = () => {
               className="-m-2.5 rounded-md p-2.5 text-gray-700"
             >
               <span className="sr-only">Close menu</span>
-              <XMarkIcon aria-hidden="true" className="h-6 w-6" />
+              <XMarkIcon aria-hidden="true" className="h-6 w-6 dark: text-foreground" />
             </button>
           </div>
           <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
+            <div className="-my-6 divide-y divide-gray-500/10 dark:divide-foreground">
               <SignedOut>
                 <div className="space-y-2 py-6">
                   {navigation.map((item) => (
                     <a
                       key={item.name}
                       href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-popover"
                     >
                       {item.name}
                     </a>

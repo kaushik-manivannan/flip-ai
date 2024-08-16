@@ -25,22 +25,23 @@ const Hero: FC<HeroProps> = () => {
           <div className="hidden sm:mb-8 sm:flex sm:justify-center">
           </div>
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            <h1 className="text-7xl font-bold tracking-tight text-gray-900 dark:text-primary sm:text-8xl">
               Flip AI
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-foreground font-light">
               Supercharge your learning with Flip AI! Create AI-powered flashcards in seconds and master any topic with ease. Study smarter, not harder.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
                 href="/create"
-                className="rounded-md bg-primary px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="rounded-lg bg-primary px-3.5 py-2.5 text-md text-white shadow-sm hover:bg-primary dark:hover:bg-primary/[0.6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
+                font-semibold"
               >
-                Get started
+                Start Learning
               </Link>
-              <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
+              <Link href="#" className="text-md leading-6 text-gray-900 dark:text-foreground">
                 Learn more <span aria-hidden="true">→</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
