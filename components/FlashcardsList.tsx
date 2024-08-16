@@ -13,10 +13,10 @@ const FlashcardsList: FC<FlashcardsListProps> = ({className, flashcards, handleC
     <>
     <div className={className} {...props}>
       {flashcards.length > 0 && flashcards.map((flashcard: any, index: number) => (
-        <Card key={index} onClick={() => handleCardClick(index)} className="h-[200px]">
-          <CardContent className="h-full p-0" style={{perspective: '1000px'}}>
-              <div 
-                className="relative w-full h-full rounded-lg" 
+        <Card key={index} onClick={() => handleCardClick(index)} className="h-[250px] cursor-pointer">
+          <CardContent className="h-full p-0 " style={{perspective: '1000px'}}>
+              <div
+                className="relative w-full h-full rounded-lg dark:bg-primary"
                 style={{
                   transition: 'transform 0.6s',
                   transformStyle: 'preserve-3d',
@@ -25,13 +25,13 @@ const FlashcardsList: FC<FlashcardsListProps> = ({className, flashcards, handleC
                 }}
               >
                 <div 
-                  className="absolute w-full h-full flex justify-center items-center p-4 box-border" 
+                  className="text-xl text-center absolute w-full h-full flex justify-center items-center p-4 box-border dark:text-primary-foreground font-bold" 
                   style={{ backfaceVisibility: 'hidden' }}
                 >
                   <p>{flashcard.front}</p>
                 </div>
                 <div 
-                  className="absolute w-full h-full flex justify-center items-center p-4 box-border"
+                  className="absolute w-full h-full flex justify-center items-center p-4 box-border dark:text-primary-foreground"
                   style={{
                     backfaceVisibility: 'hidden',
                     transform: 'rotateY(180deg)'
