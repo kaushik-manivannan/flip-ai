@@ -50,13 +50,13 @@ const CollectionsPage: FC<CollectionsPageProps> = ({ className, ...props }) => {
           <Card key={index} onClick={() => handleCardClick(flashcard.name)} className="h-[200px] cursor-pointer hover:translate-y-2 transition-transform">
             <CardContent className="h-full p-0">
                 <div 
-                  className="relative w-full h-full rounded-lg" 
+                  className="relative w-full h-full rounded-lg dark:bg-primary" 
                   style={{
                     boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2)',
                   }}
                 >
                   <div 
-                    className="absolute w-full h-full flex justify-center items-center p-4 box-border" 
+                    className="absolute w-full h-full flex justify-center items-center p-4 box-border dark:text-primary-foreground font-bold text-xl" 
                   >
                     <p>{flashcard.name}</p>
                   </div>
