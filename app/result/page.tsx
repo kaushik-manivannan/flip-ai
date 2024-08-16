@@ -1,25 +1,24 @@
 'use client'
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import getStripe from "@/utils/get-stripe"
-import { useSearchParams } from "next/navigation"
-import { Box, CircularProgress, Container, Typography } from "@mui/material"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { Box, CircularProgress, Container, Typography } from "@mui/material";
 
 const ResultPage = () => {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const session_id: any = searchParams.get('session_id')
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const session_id: any = searchParams.get('session_id');
 
-    const [loading, setLoading] = useState(true)
-    const [session, setSession] = useState<any>(null)
-    const [error, setError] = useState<any>(null)
+    const [loading, setLoading] = useState(true);
+    const [session, setSession] = useState<any>(null);
+    const [error, setError] = useState<any>(null);
 
     useEffect(() => {
         const fetchCheckoutSession = async () => {
             if (!session_id) return
 
-            try{
+            try {
                 const res = await fetch(`api/checkout_sessions?session_id=${session_id}`)
                 const sessionData = await res.json()
 
