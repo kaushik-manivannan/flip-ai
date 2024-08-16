@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.3.0",
+    "@clerk/themes": "^2.1.20",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@headlessui/react": "^2.1.2",
@@ -22,11 +23,14 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "firebase": "^10.12.5",
+    "framer-motion": "^11.3.28",
     "lucide-react": "^0.427.0",
+    "mini-svg-data-uri": "^1.4.4",
     "next": "14.2.5",
     "openai": "^4.55.4",
     "react": "^18",
     "react-dom": "^18",
+    "react-icons": "^5.3.0",
     "stripe": "^16.7.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
@@ -38,6 +42,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
+    "tailwind-scrollbar": "^3.1.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
