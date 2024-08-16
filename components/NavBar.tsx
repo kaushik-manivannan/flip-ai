@@ -10,12 +10,14 @@ import Image from "next/image";
 import logo from "@/public/logo.svg";
 import logoDark from "@/public/logo-dark.svg";
 
-interface NavBarProps {}
+interface NavBarProps {
+  showMainNav?: boolean;
+}
 
 const navigation = [
-  { name: 'Product', href: '#' },
-  { name: 'Features', href: '#' },
-  { name: 'Pricing', href: '#' },
+  { name: 'Features', href: '#features' },
+  { name: 'Pricing', href: '#pricing' },
+  { name: 'Contact', href: '#contact' },
 ]
 
 const signedInNavigation = [
@@ -23,15 +25,14 @@ const signedInNavigation = [
   { name: 'Saved Collections', href: '/collections' },
 ]
 
-const NavBar: FC<NavBarProps> = () => {
-
+const NavBar: FC<NavBarProps> = ({ showMainNav = true }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
       <nav
         aria-label="Global"
-        className="flex items-center justify-between p-6 lg:px-8 dark:bg-primary-foreground w-screen"
+        className="flex items-center justify-between p-6 lg:px-8 bg-primary-foreground dark:bg-primary-foreground w-full"
       >
           <div className="flex lg:flex-1">
             <Link href="/" className="-m-1.5 rounded-full">
@@ -59,24 +60,26 @@ const NavBar: FC<NavBarProps> = () => {
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
           >
             <span className="sr-only">Open main menu</span>
-            <Bars3Icon aria-hidden="true" className="h-6 w-6 mr-4" />
+            <Bars3Icon aria-hidden="true" className="h-6 w-6 mr-4 dark:text-foreground" />
           </button>
           <SignedIn>
             <UserButton />
           </SignedIn>
         </div>
         <SignedOut>
-          <div className="hidden lg:flex lg:gap-x-12 justify-between">
-            {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-sm font-semibold leading-6 text-gray-900 dark:text-foreground"
-              >
-                {item.name}
-              </a>
-            ))}
-          </div>
+          {showMainNav && (
+            <div className="hidden lg:flex lg:gap-x-12 justify-between">
+              {navigation.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-sm font-semibold leading-6 text-gray-900 dark:text-foreground"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          )}
         </SignedOut>
         <SignedIn>
           <div className="hidden lg:flex lg:gap-x-12 justify-between">
@@ -138,22 +141,41 @@ const NavBar: FC<NavBarProps> = () => {
               className="-m-2.5 rounded-md p-2.5 text-gray-700"
             >
               <span className="sr-only">Close menu</span>
-              <XMarkIcon aria-hidden="true" className="h-6 w-6 dark: text-foreground" />
+              <XMarkIcon aria-hidden="true" className="h-6 w-6 dark:text-foreground" />
             </button>
           </div>
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10 dark:divide-foreground">
               <SignedOut>
-                <div className="space-y-2 py-6">
-                  {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-popover"
-                    >
-                      {item.name}
-                    </a>
-                  ))}
+                {showMainNav && (
+                  <div className="space-y-2 py-6">
+                    {navigation.map((item) => (
+                      <a
+                        onClick={() => setMobileMenuOpen(false)}
+                        key={item.name}
+                        href={item.href}
+                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-primary-foreground"
+                      >
+                        {item.name}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                <div className="py-6">
+                  <Link
+                    href="/sign-in"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-primary-foreground"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-primary-foreground"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
                 </div>
               </SignedOut>
               <SignedIn>
@@ -162,28 +184,14 @@ const NavBar: FC<NavBarProps> = () => {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-primary-foreground"
+                      onClick={() => setMobileMenuOpen(false)}
                     >
                       {item.name}
                     </Link>
                   ))}
                 </div>
               </SignedIn>
-              <div className="py-6">
-              <SignedOut>
-                <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                  <Link href="/sign-in" className="text-sm font-semibold leading-6 text-gray-900 mr-4" passHref>
-                    Login
-                  </Link>
-                  <br />
-                  <div className="py-6">
-                    <Link href="/sign-in" className="text-sm font-semibold leading-6 text-gray-900" passHref>
-                      Sign Up
-                    </Link>
-                  </div>
-                </div>
-              </SignedOut>
-              </div>
             </div>
           </div>
         </DialogPanel>
