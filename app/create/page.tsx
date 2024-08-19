@@ -127,7 +127,7 @@ const CreatePage: FC<CreatePageProps> = () => {
               Welcome to Flip AI! Ready to turn your ideas into powerful flashcards?
             </p>
             <p className="text-lg sm:3xl text-gray-600 dark:text-foreground leading-9 font-light">
-            Enter a topic below and let's start learning!
+            Enter a topic below and let&apos;s start learning!
             </p>
           </div>
         )}
@@ -151,7 +151,7 @@ const CreatePage: FC<CreatePageProps> = () => {
         <Alert className="p-6">
           <AlertTitle className="mb-4">Free User Limit Reached</AlertTitle>
           <AlertDescription className="mb-2">
-            You've reached the limit of {maxAllowed} topics for free users. Upgrade to premium for unlimited topics!
+            You&apos;ve reached the limit of {maxAllowed} topics for free users. Upgrade to premium for unlimited topics!
           </AlertDescription>
           <Button
             onClick={() => router.push('/pricing')}
