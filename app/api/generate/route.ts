@@ -1,5 +1,38 @@
+import { auth } from "@clerk/nextjs/server";
+import { collection, doc, getDoc, getDocs, increment, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { db } from "@/firebase";
+
+const MAX_FREE_TOPICS = 5;
+const openai = new OpenAI();
+
+async function checkSubscriptionStatus(userId: string): Promise<boolean> {
+  const q = query(
+    collection(db, "subscriptions"), 
+    where("userId", "==", userId),
+    where("status", "==", "active")
+  );
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
+}
+
+async function getTopicCount(userId: string): Promise<number> {
+  const userRef = doc(db, "users", userId);
+  const userDoc = await getDoc(userRef);
+
+  if (!userDoc.exists()) {
+    await setDoc(userRef, { topicCount: 0 });
+    return 0;
+  } else {
+    return userDoc.data().topicCount || 0;
+  }
+}
+
+async function incrementTopicCount(userId: string): Promise<void> {
+  const userRef = doc(db, "users", userId);
+  await updateDoc(userRef, { topicCount: increment(1) });
+}
 
 const systemPrompt = `
   You are a flashcard creator. Your task is to generate concise and effective flashcards based on the given topic or content. Follow the guidelines provided below:
@@ -29,23 +62,50 @@ const systemPrompt = `
 `
 
 export async function POST(req: NextRequest){
-  const openai = new OpenAI();
   const data = await req.text();
+  const { userId } = auth();
+  
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system', content: systemPrompt
-      },
-      {
-        role: 'user', content: data
-      }
-    ],
-    response_format: {type: 'json_object'}
-  })
+  const isPremiumUser = await checkSubscriptionStatus(userId);
+  const currentTopicCount = await getTopicCount(userId);
+  
+  if (!isPremiumUser && currentTopicCount >= MAX_FREE_TOPICS) {
+    return NextResponse.json({ 
+      error: 'Free user topic limit reached',
+      isPremiumUser,
+      topicCount: currentTopicCount,
+      maxAllowed: MAX_FREE_TOPICS
+    }, { status: 403 });
+  }
 
-  const flashcards = JSON.parse(completion.choices[0].message.content!)
+  try {
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: data }
+      ],
+      response_format: {type: 'json_object'}
+    });
 
-  return NextResponse.json(flashcards.flashcards);
+    const flashcards = JSON.parse(completion.choices[0].message.content!).flashcards;
+
+    // Only increment the topic count if flashcards were successfully generated
+    if (!isPremiumUser) {
+      await incrementTopicCount(userId);
+    }
+
+    return NextResponse.json({ 
+      flashcards,
+      isPremiumUser,
+      topicCount: isPremiumUser ? null : currentTopicCount + 1,
+      maxAllowed: isPremiumUser ? null : MAX_FREE_TOPICS
+    });
+  } catch (error) {
+    console.error('Error generating flashcards:', error);
+    return NextResponse.json({ error: 'Failed to generate flashcards' }, { status: 500 });
+  }
 }

@@ -1,52 +1,112 @@
 'use client'
 
 import getStripe from '@/utils/get-stripe'
+import { useUser } from '@clerk/nextjs';
 import { CheckIcon } from '@heroicons/react/20/solid'
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const includedFeatures = [
   'Unlimited Flashcards',
-  'Saved Collections'
+  'More Features Coming Soon'
 ];
 
 export default function Pricing() {
 
-  const handleSubmit = async () => {
-    const checkoutSession: any = await fetch('api/checkout_session', {
-      method: 'POST',
-      headers: {
-        origin: 'http://localhost:3000'
-      },
-    });
+  const router = useRouter();
+  const { isSignedIn, user } = useUser();
+  const [isPremiumUser, setIsPremiumUser] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    const checkoutSessionJson = await checkoutSession.json();
-    
-    if (checkoutSession.statusCode === 500) {
-      console.error(checkoutSession.message)
+  useEffect(() => {
+    const fetchUserStatus = async () => {
+      if (!isSignedIn) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/user-status');
+        const data = await response.json();
+        setIsPremiumUser(data.isPremiumUser);
+      } catch (error) {
+        console.error('Error fetching user status:', error);
+        setIsPremiumUser(false); // Assume not premium on error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserStatus();
+  }, [isSignedIn]);
+
+  const handleSubmit = async () => {
+    if (!isSignedIn) {
+      router.push('/sign-in')
       return
     }
 
-    const stripe: any = await getStripe();
-    const {error} = await stripe.redirectToCheckout({
-      sessionId: checkoutSessionJson.id
-    });
+    if (isPremiumUser) {
+      alert('You already have an active subscription!')
+      return
+    }
 
-    if (error) {
-      console.warn(error.message)
+    setIsLoading(true);
+
+    try {
+      const checkoutSession = await fetch('api/checkout_session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user?.primaryEmailAddress?.emailAddress
+        })
+      });
+
+      const checkoutSessionJson = await checkoutSession.json();
+      
+      if (!checkoutSession.ok) {
+        throw new Error(checkoutSessionJson.error || 'Failed to create checkout session');
+      }
+
+      const stripe = await getStripe();
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: checkoutSessionJson.id
+        });
+
+        if (error) {
+          console.warn(error.message);
+          throw new Error(error.message);
+        }
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      alert('Failed to start subscription process. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   }
 
+  const isButtonDisabled = isLoading || isPremiumUser === true;
+  const buttonText = isLoading ? 'Loading...' : 
+                     isPremiumUser ? 'Already Subscribed' : 
+                     'Subscribe Now';
+
   return (
     <div id="pricing">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 mb-10">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8 mb-32 mb:py-48 lg:mb-56">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-primary sm:text-6xl">Pricing</h2>
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-primary sm:text-6xl">Pricing</h2>
           <p className="mt-2 text-lg leading-8 text-gray-600 dark:text-foreground font-light">
             Subscribe now for better features!
           </p>
         </div>
         <div className="mx-auto mt-8 max-w-2xl rounded-3xl ring-1 ring-gray-200 dark:ring-primary lg:mx-0 lg:flex lg:max-w-none">
           <div className="p-8 sm:p-10 lg:flex-auto">
-            <h3 className="text-4xl font-bold tracking-tight text-gray-900 text-center sm:text-left dark:text-foreground">Monthly Membership</h3>
+            <h3 className="text-4xl font-bold text-gray-900 text-center sm:text-left dark:text-foreground">Monthly Membership</h3>
             <p className="mt-6 text-base leading-7 text-gray-600 dark:text-foreground font-light">
               Unlock limitless learning with Flip AI's monthly membership! Enjoy the power to generate unlimited AI-driven flashcards and save them for future reference. Perfect your study sessions and keep your knowledge at your fingertips—anytime, anywhere.
             </p>
@@ -71,15 +131,21 @@ export default function Pricing() {
               <div className="mx-auto max-w-xs px-8">
                 <p className="text-xl font-semibold text-gray-600 dark:text-foreground">Pay monthly</p>
                 <p className="mt-6 flex items-baseline justify-center gap-x-2">
-                  <span className="text-5xl font-bold tracking-tight text-gray-900 dark:text-foreground">$10</span>
+                  <span className="text-5xl font-bold text-gray-900 dark:text-foreground">$10</span>
                   <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600 dark:text-foreground">USD</span>
                 </p>
                 <button
-                  onClick={handleSubmit}
-                  className="mt-10 block w-full rounded-lg bg-primary px-3 py-2 text-center text-md font-semibold text-white dark:text-foreground shadow-sm hover:bg-primary-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                disabled={isButtonDisabled}
+                onClick={handleSubmit}
+                className="mt-10 block w-full rounded-lg bg-primary px-3 py-2 text-center text-md font-semibold text-white dark:text-foreground shadow-sm hover:bg-primary-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:hover:bg-primary/[0.6] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Get access
-                </button>
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Checking Subscription...
+                  </span>
+                ) : buttonText}
+              </button>
               </div>
             </div>
           </div>

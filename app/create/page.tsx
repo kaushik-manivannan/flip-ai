@@ -3,12 +3,14 @@
 import { useUser } from "@clerk/nextjs";
 import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { db } from "@/firebase";
 import NavBar from "@/components/NavBar";
 import TextInputForm from "@/components/TextInputForm";
 import FlashcardsList from "@/components/FlashcardsList";
 import { Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 interface CreatePageProps {}
 
@@ -20,6 +22,29 @@ const CreatePage: FC<CreatePageProps> = () => {
   const [name, setName] = useState('');
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
+  const [topicCount, setTopicCount] = useState(0);
+  const [maxAllowed, setMaxAllowed] = useState(null);
+  const [showLimitAlert, setShowLimitAlert] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserStatus = async () => {
+      try {
+        const response = await fetch('/api/user-status');
+        const data = await response.json();
+        setIsPremiumUser(data.isPremiumUser);
+        setTopicCount(data.topicCount);
+        setMaxAllowed(data.maxAllowed);
+      } catch (error) {
+        console.error('Error fetching user status:', error);
+      }
+    };
+
+    if (isSignedIn) {
+      fetchUserStatus();
+    }
+  }, [isSignedIn]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,10 +57,19 @@ const CreatePage: FC<CreatePageProps> = () => {
         headers: { 'Content-Type': 'application/json' },
       });
 
+      if (response.status === 403) {
+        setShowLimitAlert(true);
+        setIsLoading(false);
+        return;
+      }
+
       const data = await response.json();
-      setFlashcards(data);
+      setFlashcards(data.flashcards);
+      setIsPremiumUser(data.isPremiumUser);
+      setTopicCount(data.topicCount);
+      setMaxAllowed(data.maxAllowed);
+      setFlipped(new Array(data.flashcards.length).fill(false));
       setIsLoading(false);
-      setFlipped(new Array(data.length).fill(false));
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
       alert('Failed to generate flashcards. Please try again.');
@@ -98,20 +132,35 @@ const CreatePage: FC<CreatePageProps> = () => {
           </div>
         )}
         {isLoading && (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <p className="ml-2">Generating {text} Flashcards...</p>
+          <div className="flex items-center justify-center h-64 w-full">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mr-1" />
+            <p className="ml-2 text-primary text-sm sm:text-2xl">Generating {text} Flashcards</p>
           </div>
         )}
-        {!isLoading && (
+        {!isLoading && !showLimitAlert && (
           <FlashcardsList 
           flashcards={flashcards} 
           handleCardClick={handleCardClick} 
           flipped={flipped}
-
           className="p-4 grid gap-10 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 auto-rows-max 2xl:grid-cols-4"
           />
         )}
+      </div>
+      <div className="w-fit mx-auto text-center flex flex-col">
+      {showLimitAlert && (
+        <Alert className="p-6">
+          <AlertTitle className="mb-4">Free User Limit Reached</AlertTitle>
+          <AlertDescription className="mb-2">
+            You've reached the limit of {maxAllowed} topics for free users. Upgrade to premium for unlimited topics!
+          </AlertDescription>
+          <Button
+            onClick={() => router.push('/pricing')}
+            className="mt-2"
+          >
+            Upgrade to Premium
+          </Button>
+        </Alert>
+      )}
       </div>
       <TextInputForm 
         setText={setText}
@@ -122,6 +171,7 @@ const CreatePage: FC<CreatePageProps> = () => {
         saveFlashcards={saveFlashcards}
         open={open}
         setOpen={setOpen}
+        disabled={!isPremiumUser && maxAllowed !== null && topicCount > maxAllowed}
       />
     </main>
   );

@@ -7,6 +7,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from 'next/navigation';
 import logo from "@/public/logo.svg";
 import logoDark from "@/public/logo-dark.svg";
 
@@ -23,10 +24,29 @@ const navigation = [
 const signedInNavigation = [
   { name: 'Create Flashcards', href: '/create' },
   { name: 'Saved Collections', href: '/collections' },
+  { name: 'Pricing', href: '/pricing' },
 ]
 
 const NavBar: FC<NavBarProps> = ({ showMainNav = true }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href.startsWith('#')) {
+      return false; // We're not highlighting hash links
+    }
+    // Remove leading slash from both href and pathname for comparison
+    const cleanHref = href.replace(/^\//, '');
+    const cleanPathname = pathname.replace(/^\//, '');
+    return cleanPathname === cleanHref;
+  };
+
+  const linkClasses = (href: string) =>
+    `text-sm font-semibold leading-6 ${
+      isActive(href)
+        ? 'text-primary'
+        : 'text-gray-900 dark:text-foreground hover:text-primary transition-colors'
+    }`;
 
   return (
     <>
@@ -34,24 +54,24 @@ const NavBar: FC<NavBarProps> = ({ showMainNav = true }) => {
         aria-label="Global"
         className="flex items-center justify-between p-6 lg:px-8 bg-primary-foreground dark:bg-primary-foreground w-full"
       >
-          <div className="flex lg:flex-1">
-            <Link href="/" className="-m-1.5 rounded-full">
-              <span className="sr-only">Flip AI</span>
-              <Image
-                className="hidden dark:block"
-                src={logoDark}
-                alt="dark-mode-image"
-                width={40}
-                height={40}
-              />
-              <Image
-                className="mb-4 block dark:hidden"
-                src={logo}
-                alt="light-mode-image"
-                width={40}
-                height={40}
-              />
-            </Link>
+        <div className="flex lg:flex-1">
+          <Link href="/" className="-m-1.5 rounded-full">
+            <span className="sr-only">Flip AI</span>
+            <Image
+              className="hidden dark:block"
+              src={logoDark}
+              alt="dark-mode-image"
+              width={40}
+              height={40}
+            />
+            <Image
+              className="mb-4 block dark:hidden"
+              src={logo}
+              alt="light-mode-image"
+              width={40}
+              height={40}
+            />
+          </Link>
         </div>
         <div className="flex lg:hidden">
           <button
@@ -73,7 +93,7 @@ const NavBar: FC<NavBarProps> = ({ showMainNav = true }) => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-sm font-semibold leading-6 text-gray-900 dark:text-foreground"
+                  className={linkClasses(item.href)}
                 >
                   {item.name}
                 </a>
@@ -87,7 +107,7 @@ const NavBar: FC<NavBarProps> = ({ showMainNav = true }) => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold leading-6 text-gray-900 dark:text-foreground"
+                className={linkClasses(item.href)}
               >
                 {item.name}
               </Link>
@@ -154,7 +174,11 @@ const NavBar: FC<NavBarProps> = ({ showMainNav = true }) => {
                         onClick={() => setMobileMenuOpen(false)}
                         key={item.name}
                         href={item.href}
-                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-primary-foreground"
+                        className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
+                          isActive(item.href)
+                            ? 'text-primary'
+                            : 'text-gray-900 dark:text-foreground hover:bg-gray-50 dark:hover:bg-primary-foreground'
+                        }`}
                       >
                         {item.name}
                       </a>
@@ -184,7 +208,11 @@ const NavBar: FC<NavBarProps> = ({ showMainNav = true }) => {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 dark:text-foreground dark:hover:bg-primary-foreground"
+                      className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
+                        isActive(item.href)
+                          ? 'text-primary'
+                          : 'text-gray-900 dark:text-foreground hover:bg-gray-50 dark:hover:bg-primary-foreground'
+                      }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       {item.name}

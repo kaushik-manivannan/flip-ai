@@ -51,12 +51,15 @@ const SavedFlashcard: FC<SavedFlashcardProps> = () => {
   return (
     <main className="h-screen flex flex-col">
       <NavBar />
+      <h1 className="text-4xl w-full text-center my-8">
+        { search }
+      </h1>
       <div className="flex-grow overflow-auto">
         <FlashcardsList 
           flashcards={flashcards}
           handleCardClick={handleCardClick} 
           flipped={flipped}
-          className="p-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 auto-rows-max"
+          className="p-4 grid gap-10 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 auto-rows-max 2xl:grid-cols-4"
         />
       </div>
     </main>

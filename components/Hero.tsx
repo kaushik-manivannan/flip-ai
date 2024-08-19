@@ -50,8 +50,8 @@ const Hero: FC<HeroProps> = () => {
               >
                 Start Learning
               </Link>
-              <Link href="#" className="text-md leading-6 text-gray-900 dark:text-foreground">
-                Learn more <span aria-hidden="true">→</span>
+              <Link href="#features" className="text-md leading-6 text-gray-900 dark:text-foreground">
+                Learn More <span aria-hidden="true">→</span>
               </Link>
             </div>
           </div>

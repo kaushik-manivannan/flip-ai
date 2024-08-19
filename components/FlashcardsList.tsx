@@ -31,7 +31,7 @@ const FlashcardsList: FC<FlashcardsListProps> = ({className, flashcards, handleC
                   <p>{flashcard.front}</p>
                 </div>
                 <div 
-                  className="absolute w-full h-full flex justify-center items-center p-4 box-border dark:text-primary-foreground"
+                  className="absolute w-full h-full flex justify-center items-center p-4 box-border dark:text-primary-foreground font-medium text-lg"
                   style={{
                     backfaceVisibility: 'hidden',
                     transform: 'rotateY(180deg)'
