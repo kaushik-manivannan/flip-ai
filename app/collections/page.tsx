@@ -11,9 +11,9 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface CollectionsPageProps extends HTMLAttributes<HTMLDivElement> {}
+interface CollectionsPageProps {}
 
-const CollectionsPage: FC<CollectionsPageProps> = ({ className, ...props }) => {
+const CollectionsPage: FC<CollectionsPageProps> = () => {
   const { isLoaded, isSignedIn, user } = useUser();
   const [flashcards, setFlashcards] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
