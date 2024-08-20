@@ -108,7 +108,7 @@ export default function Pricing() {
           <div className="p-8 sm:p-10 lg:flex-auto">
             <h3 className="text-4xl font-bold text-gray-900 text-center sm:text-left dark:text-foreground">Monthly Membership</h3>
             <p className="mt-6 text-base leading-7 text-gray-600 dark:text-foreground font-light">
-              Unlock limitless learning with Flip AI&apos;s monthly membership! Enjoy the power to generate unlimited AI-driven flashcards and save them for future reference. Perfect your study sessions and keep your knowledge at your fingertips—anytime, anywhere.
+              Unlock limitless learning with Flip AI&apos;s monthly membership! Enjoy the power to generate unlimited flashcards. Perfect your study sessions and keep your knowledge at your fingertips—anytime, anywhere.
             </p>
             <div className="mt-10 flex items-center gap-x-4">
               <h4 className="flex-none text-lg font-semibold leading-6 text-primary">What&apos;s Included</h4>

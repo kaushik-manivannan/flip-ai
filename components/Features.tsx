@@ -37,7 +37,7 @@ const FeaturesPage: FC<FeaturesPageProps> = () => {
             <div className="lg:max-w-lg">
               <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-foreground sm:text-4xl">Your Ultimate Flashcard Companion</p>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-foreground">
-                Flip AI transforms the way you learn by generating custom flashcards from your ideas, notes, or study materials in seconds. Our app is designed to make learning faster, easier, and more enjoyable. Here&apos;s what you&apos;ll love about Flip AI:
+                Flip AI transforms the way you learn by generating custom flashcards from topics of your choice in seconds. Our app is designed to make learning faster, easier, and more enjoyable. Here&apos;s what you&apos;ll love about Flip AI:
               </p>
               <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
                 {features.map((feature) => (
