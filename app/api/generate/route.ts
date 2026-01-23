@@ -6,6 +6,7 @@ import { db } from "@/firebase";
 
 const MAX_FREE_TOPICS = 5;
 const openai = new OpenAI();
+export const maxDuration = 60;
 
 async function checkSubscriptionStatus(userId: string): Promise<boolean> {
   const q = query(
